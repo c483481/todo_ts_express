@@ -1,6 +1,5 @@
 import { DEFAULT_INTERNAL_ERROR } from "./message.handler";
 
-
 export interface Responses {
     status: number;
     success: boolean;

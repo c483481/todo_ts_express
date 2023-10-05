@@ -1,4 +1,4 @@
-import { MapErrorResponse, RequestResponse } from "./handler/responses.handler";
+import { MapErrorResponse } from "./handler/responses.handler";
 
 export const errorResponses: MapErrorResponse = new MapErrorResponse();
 

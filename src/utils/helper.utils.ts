@@ -1,5 +1,12 @@
 import { Request } from "express";
-import { BaseAttribute, BaseResult, GetDetail_Payload, List_Payload, ModifiedBy, UserSession } from "../module/dto.module";
+import {
+    BaseAttribute,
+    BaseResult,
+    GetDetail_Payload,
+    List_Payload,
+    ModifiedBy,
+    UserSession,
+} from "../module/dto.module";
 import { parseToNumber, parseToString } from "./parse.uttils";
 import { compareString } from "./compare.utils";
 import { createXid } from "./string.utils";

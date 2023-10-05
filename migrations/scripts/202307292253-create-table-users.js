@@ -27,9 +27,23 @@ module.exports = {
                 allowNull: false
             },
         });
+
+        await queryInterface.addIndex(name, ['email'], {
+            name: 'email_index',
+            unique: true,
+        });
+
+        await queryInterface.addIndex(name, ["email"], {
+            name: "xid_index",
+            unique: true,
+        });
+
+        await queryInterface.addIndex(name, ["xid"]);
     },
 
     async down(queryInterface, _Sequelize) {
+        await queryInterface.removeIndex(name, "email_index");
+        await queryInterface.removeIndex(name, "xid_index");
         await queryInterface.dropTable(name);
     },
 };

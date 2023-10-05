@@ -51,8 +51,8 @@ function initConfig(): AppConfiguration {
         dbPort: parseToNumber(process.env.DB_PORT, 3306),
 
         mongoseeUri: parseToString(process.env.MONGO_URI),
-        mongoseePassword: parseToString(process.env.MONGO_USERNAME),
-        mongoseeUsername: parseToString(process.env.MONGO_PASS),
+        mongoseePassword: parseToString(process.env.MONGO_PASS),
+        mongoseeUsername: parseToString(process.env.MONGO_USERNAME),
         mongooseeAuthSource: parseToString(process.env.MONGO_AUTH_SOURCE),
 
         redisUri: parseToString(process.env.REDIS_URI),

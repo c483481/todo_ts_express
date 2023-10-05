@@ -1,0 +1,112 @@
+version: '3.8'
+    
+services:
+  # configuration backend application
+  backend:
+    # make sure backend application build after sql, nosql, and redis
+    depends_on:
+      - sql
+      - nosql
+      - redis
+    # run docker file in this folder
+    build: 
+      context: ./
+    # expose port backend
+    ports:
+      - 5000:5000
+    # add environtment
+    env_file:
+      - .docker.env
+    # set networks
+    networks:
+      - express-network
+    deploy:
+      resources:
+        limits:
+          # limit docker memory to 1 GB
+          memory: 1024m
+          # limit docker CPU 1 core
+          cpus: "1"
+  # set postgres configuration
+  sql:
+    image: postgres:latest
+    # make sure database always run when docker run
+    restart: always
+    # setting env
+    environment:
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: docker_database
+    volumes:
+      - quen:/var/lib/postgresql/data
+    # expose port
+    ports:
+      - 5433:5432
+    # set networks
+    networks:
+      - express-network
+    # limit docker memory to 1 GB
+    deploy:
+      resources:
+        limits:
+          memory: 1024m
+  # set mongodb configuration
+  nosql:
+    image: mongo:latest
+    restart: always
+    ports:
+      - 27018:27017
+    volumes:
+      - quen:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin
+    # set networks
+    networks:
+      - express-network
+    # limit docker memory to 1 GB
+    deploy:
+      resources:
+        limits:
+          memory: 1024m
+  # set redis configuration
+  redis:
+    image: redis:latest
+    restart: always
+    ports:
+      - 6380:6379
+    volumes:
+      - quen:/var/lib/redis
+    # set networks
+    networks:
+      - express-network
+    # run set password on redis
+    command: ["redis-server", "--requirepass", "redisPassword"]
+    # limit docker memory to 1 GB
+    deploy:
+      resources:
+        limits:
+          memory: 1024m
+  nginx:
+    image: nginx:latest
+    ports:
+      - 80:80
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - backend
+    networks:
+      - express-network
+    # limit docker memory to 50 MB
+    deploy:
+      resources:
+        limits:
+          memory: 2048m
+# set networks
+networks:
+  express-network:
+    driver: bridge
+# set volumes for save the data
+volumes:
+  quen:
+    external: true

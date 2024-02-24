@@ -9,6 +9,7 @@ services:
       - nosql
       - redis
     # run docker file in this folder
+    restart: always
     build: 
       context: ./
     # add environtment
@@ -79,6 +80,7 @@ services:
           memory: 1024m
   nginx:
     image: nginx:latest
+    restart: always
     ports:
       - 80:80
     volumes:

@@ -33,6 +33,9 @@ export interface AppConfiguration {
     jwtRefreshLifeTime: number;
 
     limitRequestPerSecond: number;
+
+    idempotencyLength: number;
+    idempotencySecond: number;
 }
 
 function initConfig(): AppConfiguration {
@@ -66,6 +69,8 @@ function initConfig(): AppConfiguration {
         jwtRefreshLifeTime: parseToNumber(process.env.REFRESH_LIFE_TIME_TOKEN),
 
         limitRequestPerSecond: parseToNumber(process.env.LIMIT_REQUEST_PER_SECOND, 5),
+        idempotencyLength: parseToNumber(process.env.IDEMPOTENCY_LENGTH, 10),
+        idempotencySecond: parseToNumber(process.env.IDEMPOTENCY_SECOND, 15),
     };
 }
 

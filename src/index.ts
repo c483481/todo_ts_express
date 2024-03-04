@@ -12,6 +12,7 @@ import { initErrorResponse } from "./response";
 import compression from "compression";
 import { AppRepositoryMap } from "./contract/repository.contract";
 import { AppServiceMap } from "./contract/service.contract";
+import { idempotency } from "./module/idempotency.module";
 
 start();
 
@@ -36,7 +37,7 @@ async function start(): Promise<void> {
 
     const app = init(service);
     app.listen(config.port, () => {
-        console.log(`Running on ${config.baseUrl}`);
+        console.log(`Running on ${config.baseUrl}:${config.port}`);
     });
 }
 
@@ -71,9 +72,15 @@ function init(service: AppServiceMap): express.Application {
 
     const controller = new Controller();
 
-    if (!config.isProduction) {
-        app.use(handleRequest);
-    }
+    app.use(handleRequest);
+
+    idempotency.setLength(config.idempotencyLength);
+
+    idempotency.setLifeTime(config.idempotencySecond);
+
+    idempotency.setStorage(new Set<string>());
+
+    app.use(idempotency.new());
 
     app.get("/", handleApiStatus(manifest));
 

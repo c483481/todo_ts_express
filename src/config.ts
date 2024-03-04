@@ -9,6 +9,7 @@ export interface AppConfiguration {
     baseUrl: string;
 
     jwtKey: string;
+    jwtRefreshKey: string;
 
     port: number;
     cors: string[];
@@ -29,6 +30,7 @@ export interface AppConfiguration {
     redisPassword: string;
 
     jwtLifeTime: number;
+    jwtRefreshLifeTime: number;
 
     limitRequestPerSecond: number;
 }
@@ -38,6 +40,8 @@ function initConfig(): AppConfiguration {
         isProduction: compareString(parseToString(process.env.NODE_ENV), "production"),
 
         jwtKey: parseToString(process.env.JWT_KEY),
+        jwtRefreshKey: parseToString(process.env.JWT_REFRESH_KEY),
+
         baseUrl: parseToString(process.env.BASE_URL),
 
         port: parseToNumber(process.env.PORT, 3000),
@@ -59,6 +63,7 @@ function initConfig(): AppConfiguration {
         redisPassword: parseToString(process.env.REDIS_PASS),
 
         jwtLifeTime: parseToNumber(process.env.LIFE_TIME_TOKEN),
+        jwtRefreshLifeTime: parseToNumber(process.env.REFRESH_LIFE_TIME_TOKEN),
 
         limitRequestPerSecond: parseToNumber(process.env.LIMIT_REQUEST_PER_SECOND, 5),
     };

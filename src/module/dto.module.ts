@@ -58,6 +58,12 @@ export type EncodeToken = {
     data: UserAuthToken;
 };
 
+export type EncodeRefreshToken = {
+    data: {
+        xid: string;
+    };
+};
+
 export type JwtResult = {
     token: string;
     lifeTime: number;

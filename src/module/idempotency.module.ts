@@ -15,7 +15,7 @@ export interface IdempotencyConfig {
 
 class Idempotency {
     private readonly header: string;
-    private len: number = 10;
+    private len = 10;
     private storage: Storage = new Set<string>();
     private lifeTime: number = 30 * 1000;
 

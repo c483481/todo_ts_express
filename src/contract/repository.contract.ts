@@ -10,7 +10,6 @@ export interface AppRepositoryMap {
     todos: TodosRepository;
     limitEmail: EmailLimitRepository;
     loginHistory: LoginHistoryRepository;
-    refreshToken: RefreshTokenRepository;
 }
 
 export interface UsersRepository {
@@ -61,13 +60,4 @@ export interface LoginHistoryRepository {
     deleteByEpoch(epoch: number): Promise<number>;
 
     triggerPubsub(payload: LoginHistoryCreation_Payload): void;
-}
-
-export interface RefreshTokenRepository {
-    setRefreshToken(token: string, xid: string): Promise<number>;
-
-    getRefreshToken(token: string): Promise<{
-        xid: string | null;
-        lifeTime: number;
-    }>;
 }

@@ -2,34 +2,31 @@ import {
     AppRepositoryMap,
     EmailLimitRepository,
     LoginHistoryRepository,
-    RefreshTokenRepository,
     UsersRepository,
 } from "../../contract/repository.contract";
 import { AuthService } from "../../contract/service.contract";
 import { compareString } from "../../utils/compare.utils";
 import { createData } from "../../utils/helper.utils";
 import { jwtModule } from "../../module/jwt.module";
-import { secureRandomString } from "../../utils/string.utils";
 import { errorResponses } from "../../response";
-import { AuthLogin_Payload, AuthRegister_Payload, AuthResult } from "../dto/auth.dto";
+import { AuthLogin_Payload, AuthRegister_Payload, AuthResult, RefreshTokenResult } from "../dto/auth.dto";
 import { LoginHistoryCreation_Payload } from "../dto/login-history.dto";
 import { UsersResult } from "../dto/users.dto";
 import { UsersAttributes, UsersCreationAttributes } from "../model/sql/users.model";
 import { BaseService } from "./base.service";
 import { composeUsers } from "./users.service";
 import { bcryptModule } from "../../module/bcrypt.module";
+import { isValid } from "ulidx";
 
 export class Auth extends BaseService implements AuthService {
     private usersRepo!: UsersRepository;
     private limitEmailRepo!: EmailLimitRepository;
     private loginHistoryRepo!: LoginHistoryRepository;
-    private refreshTokenRepo!: RefreshTokenRepository;
 
     init(repository: AppRepositoryMap): void {
         this.usersRepo = repository.users;
         this.limitEmailRepo = repository.limitEmail;
         this.loginHistoryRepo = repository.loginHistory;
-        this.refreshTokenRepo = repository.refreshToken;
     }
 
     login = async (payload: AuthLogin_Payload): Promise<AuthResult> => {
@@ -54,10 +51,6 @@ export class Auth extends BaseService implements AuthService {
             throw errorResponses.getError("E_AUTH_2");
         }
 
-        const randomToken = secureRandomString(8);
-
-        const lifeTime = await this.refreshTokenRepo.setRefreshToken(randomToken, users.xid);
-
         const payloadLoginHistory: LoginHistoryCreation_Payload = {
             userXid: users.xid,
             ip: ip,
@@ -70,6 +63,8 @@ export class Auth extends BaseService implements AuthService {
             email: users.email,
         });
 
+        const refreshToken = jwtModule.issueRefresh(users.xid);
+
         const result = composeUsers(users) as AuthResult;
 
         result.accessToken = {
@@ -78,8 +73,8 @@ export class Auth extends BaseService implements AuthService {
         };
 
         result.refreshToken = {
-            token: randomToken,
-            lifeTime: lifeTime,
+            token: refreshToken.token,
+            lifeTime: refreshToken.lifeTime,
         };
 
         return result;
@@ -111,34 +106,25 @@ export class Auth extends BaseService implements AuthService {
         return composeUsers(created);
     };
 
-    refreshToken = async (token: string | null): Promise<AuthResult> => {
-        if (!token) {
-            throw errorResponses.getError("E_REF_1");
+    refreshToken = async (xid: string): Promise<RefreshTokenResult> => {
+        if (!isValid(xid)) {
+            throw errorResponses.getError("E_FOUND_1");
         }
 
-        const resultRedis = await this.refreshTokenRepo.getRefreshToken(token);
-        if (!resultRedis.xid || !resultRedis.lifeTime) {
-            throw errorResponses.getError("E_REF_1");
-        }
+        const users = await this.usersRepo.findByXid(xid);
 
-        const users = await this.usersRepo.findByXid(resultRedis.xid);
         if (!users) {
-            throw errorResponses.getError("E_REF_1");
+            throw errorResponses.getError("E_FOUND_1");
         }
 
-        const result = composeUsers(users) as AuthResult;
+        const result = composeUsers(users) as RefreshTokenResult;
 
-        result.refreshToken = {
-            token,
-            lifeTime: resultRedis.lifeTime,
+        result.key = {
+            accessToken: jwtModule.issue({
+                email: users.email,
+                xid: users.xid,
+            }),
         };
-
-        const accessToken = jwtModule.issue({
-            email: users.email,
-            xid: users.xid,
-        });
-
-        result.accessToken = accessToken;
 
         return result;
     };

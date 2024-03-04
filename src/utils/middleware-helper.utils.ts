@@ -1,6 +1,6 @@
 import { NextFunction, Request, RequestHandler, Response } from "express";
 import { compareString } from "./compare.utils";
-import { getIp, saveUsersSession } from "./helper.utils";
+import { getIp, saveRefreshToken, saveUsersSession } from "./helper.utils";
 import { jwtModule } from "../module/jwt.module";
 import { EncodeToken, UserSession } from "../module/dto.module";
 import { ERROR_FORBIDDEN, ERROR_UNAUTHORIZE } from "../handler/message.handler";
@@ -92,4 +92,32 @@ export function middlewareRBAC(audiance?: string[]): RequestHandler {
             return;
         }
     };
+}
+
+export function refreshTokenMiddleware(req: Request, _res: Response, next: NextFunction): void {
+    const refreshToken = req.headers.authorization;
+
+    if (!refreshToken) {
+        next(ERROR_UNAUTHORIZE);
+        return;
+    }
+
+    const token = getValidToken(refreshToken);
+    if (!token) {
+        next(ERROR_UNAUTHORIZE);
+        return;
+    }
+
+    try {
+        const verification = jwtModule.verifyRefreshToken(token);
+
+        delete req.headers.authorization;
+
+        const refreshToken = verification.data;
+
+        saveRefreshToken(req, refreshToken);
+        next();
+    } catch (error) {
+        next(ERROR_FORBIDDEN);
+    }
 }

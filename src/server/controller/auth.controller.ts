@@ -5,9 +5,9 @@ import { AuthLogin_Payload, AuthRegister_Payload } from "../dto/auth.dto";
 import { validate } from "../validate";
 import { AuthValidator } from "../validate/auth.validator";
 import { WrapAppHandler } from "../../handler/default.handler";
-import { getIp } from "../../utils/helper.utils";
-import { getValidToken } from "../../utils/middleware-helper.utils";
+import { getForceRefreshToken, getIp } from "../../utils/helper.utils";
 import { limiterGetRefreshToken } from "../../handler/limitter.handler";
+import { refreshTokenMiddleware } from "../../utils/middleware-helper.utils";
 
 export class AuthController extends BaseController {
     private service!: AuthService;
@@ -22,7 +22,7 @@ export class AuthController extends BaseController {
     initRoute(): void {
         this.router.post("/login", WrapAppHandler(this.login));
         this.router.post("/register", WrapAppHandler(this.register));
-        this.router.get("/", limiterGetRefreshToken, WrapAppHandler(this.refreshToken));
+        this.router.get("/", limiterGetRefreshToken, refreshTokenMiddleware, WrapAppHandler(this.refreshToken));
     }
 
     login = async (req: Request): Promise<unknown> => {
@@ -48,9 +48,9 @@ export class AuthController extends BaseController {
     };
 
     refreshToken = async (req: Request): Promise<unknown> => {
-        const token = getValidToken(req.headers.authorization);
+        const xid = getForceRefreshToken(req);
 
-        const result = await this.service.refreshToken(token);
+        const result = await this.service.refreshToken(xid);
 
         return result;
     };

@@ -1,5 +1,5 @@
 import { GetDetail_Payload, ListResult, List_Payload } from "../module/dto.module";
-import { AuthLogin_Payload, AuthRegister_Payload, AuthResult } from "../server/dto/auth.dto";
+import { AuthLogin_Payload, AuthRegister_Payload, AuthResult, RefreshTokenResult } from "../server/dto/auth.dto";
 import { LoginHistoryResult } from "../server/dto/login-history.dto";
 import {
     TodoCreation_Payload,
@@ -35,7 +35,7 @@ export interface AuthService {
 
     register(payload: AuthRegister_Payload): Promise<UsersResult>;
 
-    refreshToken(token: string | null): Promise<AuthResult>;
+    refreshToken(xid: string): Promise<RefreshTokenResult>;
 }
 
 export interface UsersService {

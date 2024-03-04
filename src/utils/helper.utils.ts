@@ -9,10 +9,10 @@ import {
 } from "../module/dto.module";
 import { parseToNumber, parseToString } from "./parse.uttils";
 import { compareString } from "./compare.utils";
-import { createXid } from "./string.utils";
 import { ERROR_UNAUTHORIZE } from "../handler/message.handler";
 import { DEFAULT_USER_SESSION_ANONYMUS } from "../module/default.module";
 import { toUnixEpoch } from "./date.utils";
+import { ulid } from "ulidx";
 
 export function saveUsersSession(req: Request, data: UserSession): void {
     req.app.locals.users = data;
@@ -28,6 +28,18 @@ export function getForceUsersSession(req: Request): UserSession {
         throw ERROR_UNAUTHORIZE;
     }
     return userSession;
+}
+
+export function saveRefreshToken(req: Request, data: { xid: string }): void {
+    req.app.locals.refreshToken = data;
+}
+
+export function getForceRefreshToken(req: Request): string {
+    const refreshToken: { xid: string } | undefined = req.app.locals.refreshToken;
+    if (!refreshToken) {
+        throw ERROR_UNAUTHORIZE;
+    }
+    return refreshToken.xid;
 }
 
 export function getIp(req: Request): string {
@@ -82,7 +94,7 @@ export function compose<T, K>(arr: T[], fn: (attr: T) => K): K[] {
 
 export function createData<T extends BaseAttribute>(o: Omit<T, keyof BaseAttribute>, userSession?: UserSession): T {
     const timestamp = new Date();
-    const xid = createXid();
+    const xid = ulid();
 
     return Object.assign(
         {

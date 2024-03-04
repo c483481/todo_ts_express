@@ -18,3 +18,9 @@ export type AuthRegister_Payload = {
     password: string;
     rePassword: string;
 };
+
+export type RefreshTokenResult = UsersResult & {
+    key: {
+        accessToken: Token;
+    };
+};

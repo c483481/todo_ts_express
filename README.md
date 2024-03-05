@@ -14,12 +14,18 @@ This Aplication create with [Typescript](https://www.typescriptlang.org/).
 -   Add helmet
 -   Add limit request
 -   Add limit URLEncode
+-   Add idempotency request
+-   Implementing string sanitization is essential to protect against XSS attacks
 
 ## Installation
 
 ```bash
+# install pm2
+$ npm install pm2 -g
 # install package
 $ npm install
+# or
+$ npm i
 ```
 
 ## Running the app

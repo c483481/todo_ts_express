@@ -6,6 +6,7 @@ import { errorResponses } from "../../response";
 import { TodoCreation_Payload, TodoResult, TodoUpdateStatus_Payload, TodoUpdate_Payload } from "../dto/todos.dto";
 import { TodoAttribute, TodoCreationAttribute } from "../model/nosql/todos.model";
 import { BaseService } from "./base.service";
+import { purify } from "../../module/purify.module";
 
 export class Todos extends BaseService implements TodosService {
     private todoRepo!: TodosRepository;
@@ -35,8 +36,8 @@ export class Todos extends BaseService implements TodosService {
 
         const createdValues: TodoCreationAttribute = createData<TodoCreationAttribute>(
             {
-                title,
-                description,
+                title: purify.clean(title),
+                description: purify.clean(description),
                 active: true,
                 userXid: userSession.xid,
             },
@@ -58,8 +59,8 @@ export class Todos extends BaseService implements TodosService {
         const updateValues: Partial<TodoAttribute> = updateData<TodoAttribute>(
             todo,
             {
-                title: title,
-                description: description,
+                title: purify.clean(title),
+                description: purify.clean(description),
             },
             userSession
         );
@@ -127,8 +128,8 @@ export class Todos extends BaseService implements TodosService {
 
 export function composeTodo(row: TodoAttribute): TodoResult {
     return composeResult<TodoAttribute, TodoResult>(row, {
-        title: row.title,
-        userXid: row.userXid,
+        title: purify.clean(row.title),
+        userXid: purify.clean(row.userXid),
         description: row.description,
         active: row.active,
     });

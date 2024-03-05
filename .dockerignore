@@ -1,5 +1,4 @@
 node_modules/
-src/
 .env
 .docker.env
 coverage/

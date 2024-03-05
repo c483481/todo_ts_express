@@ -2,5 +2,5 @@ import { AppManifest } from "./handler/default.handler";
 
 export const manifest: AppManifest = {
     appName: "code base quentoftroll",
-    appVersion: "0.2.0",
+    appVersion: "0.3.0",
 };

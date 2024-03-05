@@ -12,6 +12,7 @@ services:
     restart: always
     build: 
       context: ./
+      dockerfile: dockerfile
     # add environtment
     env_file:
       - .docker.env

@@ -5,11 +5,19 @@ export abstract class BaseController {
     protected router: Router;
     private readonly prefix: string;
     private readonly useLimiter: boolean;
+    private readonly useIdempotency: boolean;
 
-    constructor(prefix: string, useLimiter = true) {
+    constructor(
+        prefix: string,
+        { useLimiter, useIdempotency }: { useLimiter: boolean; useIdempotency: boolean } = {
+            useIdempotency: true,
+            useLimiter: true,
+        }
+    ) {
         this.prefix = prefix;
         this.router = Router();
         this.useLimiter = useLimiter;
+        this.useIdempotency = useIdempotency;
     }
 
     abstract init(service: AppServiceMap): void;
@@ -22,6 +30,10 @@ export abstract class BaseController {
 
     getRouter = (): Router => {
         return this.router;
+    };
+
+    getUseIdempotency = (): boolean => {
+        return this.useIdempotency;
     };
 
     getUseLimiter = (): boolean => {

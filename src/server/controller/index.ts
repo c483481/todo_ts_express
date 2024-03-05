@@ -6,6 +6,7 @@ import { TodosController } from "./todos.controller";
 import { UsersController } from "./users.controller";
 import { LoginHistoryController } from "./login-history.controller";
 import { limiter } from "../../handler/limitter.handler";
+import { idempotency } from "../../module/idempotency.module";
 
 export class Controller {
     private readonly auth = new AuthController();
@@ -24,6 +25,11 @@ export class Controller {
                 if (r.getUseLimiter()) {
                     router.use(prefix, limiter);
                     console.log(`initiate limiter in ${prefix}`);
+                }
+
+                if (r.getUseIdempotency()) {
+                    router.use(idempotency.handler);
+                    console.log(`initiate idempotency in ${prefix}`);
                 }
 
                 router.use(prefix, r.getRouter());

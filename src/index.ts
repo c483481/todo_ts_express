@@ -80,8 +80,6 @@ function init(service: AppServiceMap): express.Application {
 
     idempotency.setStorage(new Set<string>());
 
-    app.use(idempotency.new());
-
     app.get("/", handleApiStatus(manifest));
 
     app.use(controller.init(service));

@@ -35,43 +35,41 @@ class Idempotency {
         this.storage = storage;
     };
 
-    new = (): RequestHandler => {
-        return (req: Request, res: Response, next: NextFunction): void | Response => {
-            const method = req.method;
-            if (this.isMethodSafe(method)) {
-                return next();
-            }
-
-            const key = req.header(this.header);
-
-            if (!key) {
-                return res.status(400).json({
-                    success: false,
-                    code: "E_IDEM_0",
-                    message: `Header ${this.header} Not Found`,
-                });
-            }
-
-            if (key.length != this.len) {
-                return res.status(400).json({
-                    success: false,
-                    code: "E_IDEM_1",
-                    message: `Invalid Length Key (${key.length}) != (${this.len})`,
-                });
-            }
-
-            if (this.storage.has(key)) {
-                return res.status(409).json({
-                    success: false,
-                    code: "E_IDEM_2",
-                    message: `Key ${key} Already Exist`,
-                });
-            }
-
-            this.addToStorage(key);
-
+    handler = (req: Request, res: Response, next: NextFunction): void | Response => {
+        const method = req.method;
+        if (this.isMethodSafe(method)) {
             return next();
-        };
+        }
+
+        const key = req.header(this.header);
+
+        if (!key) {
+            return res.status(400).json({
+                success: false,
+                code: "E_IDEM_0",
+                message: `Header ${this.header} Not Found`,
+            });
+        }
+
+        if (key.length != this.len) {
+            return res.status(400).json({
+                success: false,
+                code: "E_IDEM_1",
+                message: `Invalid Length Key (${key.length}) != (${this.len})`,
+            });
+        }
+
+        if (this.storage.has(key)) {
+            return res.status(409).json({
+                success: false,
+                code: "E_IDEM_2",
+                message: `Key ${key} Already Exist`,
+            });
+        }
+
+        this.addToStorage(key);
+
+        return next();
     };
 
     private addToStorage = (key: string): void => {

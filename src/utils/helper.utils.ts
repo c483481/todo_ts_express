@@ -9,10 +9,10 @@ import {
 } from "../module/dto.module";
 import { parseToNumber, parseToString } from "./parse.uttils";
 import { compareString } from "./compare.utils";
-import { ERROR_UNAUTHORIZE } from "../handler/message.handler";
 import { DEFAULT_USER_SESSION_ANONYMUS } from "../module/default.module";
 import { toUnixEpoch } from "./date.utils";
 import { ulid } from "ulidx";
+import { ERROR_UNAUTHORIZE } from "../handler/responses.handler";
 
 export function saveUsersSession(req: Request, data: UserSession): void {
     req.app.locals.users = data;

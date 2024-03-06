@@ -1,4 +1,4 @@
-import { DEFAULT_INTERNAL_ERROR } from "./message.handler";
+import { DEFAULT_FORBIDDEN_ERROR, DEFAULT_INTERNAL_ERROR, DEFAULT_UNAUTHORIZE_ERROR } from "./message.handler";
 
 export interface Responses {
     status: number;
@@ -56,3 +56,7 @@ export class MapErrorResponse {
         });
     }
 }
+
+export const ERROR_UNAUTHORIZE: ErrorResponse = new ErrorResponse(DEFAULT_UNAUTHORIZE_ERROR);
+
+export const ERROR_FORBIDDEN: ErrorResponse = new ErrorResponse(DEFAULT_FORBIDDEN_ERROR);

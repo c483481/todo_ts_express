@@ -3,7 +3,7 @@ import { compareString } from "./compare.utils";
 import { getIp, saveRefreshToken, saveUsersSession } from "./helper.utils";
 import { jwtModule } from "../module/jwt.module";
 import { EncodeToken, UserSession } from "../module/dto.module";
-import { ERROR_FORBIDDEN, ERROR_UNAUTHORIZE } from "../handler/message.handler";
+import { ERROR_FORBIDDEN, ERROR_UNAUTHORIZE } from "../handler/responses.handler";
 
 export function getValidToken(token: unknown): string | null {
     if (typeof token !== "string") {

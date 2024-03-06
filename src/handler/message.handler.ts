@@ -1,4 +1,4 @@
-import { ErrorResponse, Responses } from "./responses.handler";
+import { Responses } from "./responses.handler";
 
 export const DEFAULT_INTERNAL_ERROR: Responses = {
     code: "E_ERR_0",
@@ -26,7 +26,3 @@ export const DEFAULT_UNAUTHORIZE_ERROR: Responses = {
     code: "E_AUTH",
     message: "Unauthorize",
 };
-
-export const ERROR_UNAUTHORIZE: ErrorResponse = new ErrorResponse(DEFAULT_UNAUTHORIZE_ERROR);
-
-export const ERROR_FORBIDDEN: ErrorResponse = new ErrorResponse(DEFAULT_FORBIDDEN_ERROR);

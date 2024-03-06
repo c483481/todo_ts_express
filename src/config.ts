@@ -48,7 +48,11 @@ function initConfig(): AppConfiguration {
         baseUrl: parseToString(process.env.BASE_URL),
 
         port: parseToNumber(process.env.PORT, 3000),
-        cors: parseToString(process.env.CORS).split(","),
+        cors: parseToString(process.env.CORS)
+            .split(",")
+            .map((str) => {
+                return str.trim();
+            }),
 
         dbHost: parseToString(process.env.DB_HOST),
         dbName: parseToString(process.env.DB_NAME),

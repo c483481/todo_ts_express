@@ -19,6 +19,7 @@ export enum PubSubAck {
 }
 
 export type PubSubHandlerFn<T> = (payload: T) => PubSubAck | PromiseLike<PubSubAck>;
+export type PubsubErrorHandleFn<T> = (payload: T) => void | Promise<void>;
 
 const delayPromise = util.promisify(setTimeout);
 
@@ -49,7 +50,7 @@ class PubSub {
         );
     }
 
-    subscribe<T>(topic: symbol, handler: PubSubHandlerFn<T>) {
+    subscribe<T>(topic: symbol, handler: PubSubHandlerFn<T>, handleError?: PubsubErrorHandleFn<T>) {
         this.eventEmitter.on(topic, (payload: T, metadata: PubSubMetadata) => {
             console.debug(`Call subscribe handler. Topic = ${topic.toString()}, Id = ${metadata.id}`);
             Promise.resolve(handler(payload))
@@ -69,6 +70,26 @@ class PubSub {
                                         metadata.retryNo
                                     }, MaxRetry = ${metadata.maxRetry}, Id = ${metadata.id}`
                                 );
+                                if (handleError) {
+                                    console.debug(
+                                        `Call error handler. Topic = ${topic.toString()}, Id = ${metadata.id}`
+                                    );
+                                    Promise.resolve(handleError(payload))
+                                        .then(() => {
+                                            console.debug(
+                                                `Error handler success. Topic = ${topic.toString()}, Id = ${
+                                                    metadata.id
+                                                }`
+                                            );
+                                        })
+                                        .catch((err) => {
+                                            console.error(
+                                                `Error while call error handler. Topic = ${topic.toString()}, Error = ${err}, Id = ${
+                                                    metadata.id
+                                                }`
+                                            );
+                                        });
+                                }
                                 return;
                             }
 

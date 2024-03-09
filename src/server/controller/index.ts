@@ -28,7 +28,7 @@ export class Controller {
                 }
 
                 if (r.getUseIdempotency()) {
-                    router.use(idempotency.handler);
+                    router.use(prefix, idempotency.handler);
                     console.log(`initiate idempotency in ${prefix}`);
                 }
 
